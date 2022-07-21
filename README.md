@@ -14,3 +14,12 @@ In order to use this application you need to have an account in Latoken and get 
 ![image](https://user-images.githubusercontent.com/1070895/180227156-348816b8-cbec-483d-a003-75b1ca6982ce.png)
 
 If you do not have an api key, you can go to https://latoken.com/account/apikeys and create the keys.
+
+
+Nuget package used: 
+- Latoken.Api.Client.Library 1.0.0
+
+Latoken API reference
+- https://api.latoken.com/doc/v2/
+
+
