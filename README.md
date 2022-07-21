@@ -22,5 +22,6 @@ Nuget package used:
 
 Latoken API reference
 - https://api.latoken.com/doc/v2/
+- https://github.com/LATOKEN/latoken-api-v2-dotnet-client
 
 
