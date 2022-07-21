@@ -1,4 +1,5 @@
-# LatokenApiWpf
+# Latoken Api WPF sample application
+
 A sample application built on WPF .NET to use Latoken API 
 
 This is a .NET 6.0 Desktop application built using WPF.
