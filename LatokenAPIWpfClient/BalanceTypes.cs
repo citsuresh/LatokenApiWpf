@@ -8,9 +8,4 @@ namespace LatokenAPIWpfClient
         Wallet,
         Spot
     }
-
-    public partial class MainViewModel
-    {
-
-    }
 }

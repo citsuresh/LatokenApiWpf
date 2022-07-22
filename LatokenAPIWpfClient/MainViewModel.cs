@@ -32,6 +32,7 @@ namespace LatokenAPIWpfClient
             this.RefreshRatesCommand = new RelayCommand((obj) => true, (obj) => this.ExecuteRefreshRatesCommand(obj));
             this.RowRefreshClickedCommand = new RelayCommand((obj) => true, (obj) => this.ExecuteRowRefreshClickedCommand(obj));
             this.SaveKeysCommand = new RelayCommand((obj) => true, (obj) => this.ExecuteSaveKeysCommand(obj));
+            this.AddProfileCommand = new RelayCommand((obj) => true, (obj) => this.ExecuteAddProfileCommand(obj));
             //this.IsBusy = false;
         }
 
@@ -75,6 +76,7 @@ namespace LatokenAPIWpfClient
         public ICommand RefreshRatesCommand { get; set; }
         public ICommand RowRefreshClickedCommand { get; set; }
         public ICommand SaveKeysCommand { get; set; }
+        public ICommand AddProfileCommand { get; set; }
 
         public bool IsHideWalletZeroBalances
         {
@@ -116,10 +118,41 @@ namespace LatokenAPIWpfClient
             }
         }
 
-        public string PublicKey { get => publicKey; set => SetProperty(ref publicKey, value); }
+        public UserProfileCollection UserProfiles { get => userProfiles; private set => SetProperty(ref userProfiles, value); }
 
-        public string PrivateKey { get => privateKey; set => SetProperty(ref privateKey, value); }
+        public BindingList<string> ProfileNames { get => profileNames; set => SetProperty(ref profileNames, value); }
+
+        public string PublicKey
+        {
+            get => publicKey;
+            set
+            {
+                //Invalidate the client instance so that new instance is created next time.
+                this.latokenRestClient = null;
+                SetProperty(ref publicKey, value);
+            }
+        }
+
+        public string PrivateKey
+        {
+            get => privateKey;
+            set
+            {
+                //Invalidate the client instance so that new instance is created next time.
+                this.latokenRestClient = null;
+                SetProperty(ref privateKey, value);
+            }
+        }
         public bool IsFirstLaunch { get; private set; }
+        public string SelectedProfileName
+        {
+            get => selectedProfileName;
+            set
+            {
+                this.SelectedProfileChanged(value);
+                SetProperty(ref selectedProfileName, value);
+            }
+        }
 
         private LARestClient latokenRestClient = null;
         private ICollectionView walletCollectionView;
@@ -133,6 +166,9 @@ namespace LatokenAPIWpfClient
         private DateTime? lastRefreshedSpotOn;
         private string privateKey;
         private string publicKey;
+        BindingList<string> profileNames;
+        private UserProfileCollection userProfiles;
+        private string selectedProfileName;
 
         //private bool isBusy;
 
@@ -373,13 +409,48 @@ namespace LatokenAPIWpfClient
             return latokenRestClient;
         }
 
+        private void ExecuteAddProfileCommand(object param)
+        {
+            string inputRead = new InputBox("Enter the name of the profile", "Add User Profile").ShowDialog();
+            if (!string.IsNullOrWhiteSpace(inputRead))
+            {
+                this.ProfileNames.Add(inputRead);
+                this.SelectedProfileName = inputRead;
+            }
+        }
+
         private void ExecuteSaveKeysCommand(object param)
         {
             try
             {
-                AppSettings.Default.ApiKey = this.PublicKey;
-                AppSettings.Default.ApiSecret = this.PrivateKey;
-                if (string.IsNullOrWhiteSpace(this.PublicKey) || string.IsNullOrWhiteSpace(this.PrivateKey))
+                if (AppSettings.Default.UserProfiles == null)
+                {
+                    AppSettings.Default.UserProfiles = new UserProfileCollection();
+                }
+
+                var existingProfile = AppSettings.Default.UserProfiles.UserProfiles.FirstOrDefault(profile => profile.ProfileName == this.SelectedProfileName); ;
+                if (existingProfile == null && !string.IsNullOrWhiteSpace(this.PublicKey) && !string.IsNullOrWhiteSpace(this.PrivateKey))
+                {
+                    existingProfile = new UserProfile
+                    {
+                        ProfileName = this.SelectedProfileName,
+                        ApiKey = this.PublicKey,
+                        ApiSecret = this.PrivateKey,
+                    };
+                    AppSettings.Default.UserProfiles.UserProfiles.Add(existingProfile);
+                }
+
+                else if (existingProfile != null)
+                {
+                    existingProfile.ApiKey = this.PublicKey;
+                    existingProfile.ApiSecret = this.PrivateKey;
+                    AppSettings.Default.SelectedProfileName = existingProfile.ProfileName;
+                }
+
+
+                //AppSettings.Default.ApiKey = this.PublicKey;
+                //AppSettings.Default.ApiSecret = this.PrivateKey;
+                if (existingProfile == null)
                 {
                     this.IsFirstLaunch = true;
                 }
@@ -391,9 +462,15 @@ namespace LatokenAPIWpfClient
                 AppSettings.Default.IsFirstLaunch = this.IsFirstLaunch;
 
                 this.latokenRestClient = this.GetLaTokenRestClient();
+
                 if (this.latokenRestClient != null && !string.IsNullOrEmpty(this.latokenRestClient.GetUser().Result.Id))
                 {
                     AppSettings.Default.Save();
+                }
+                else
+                {
+                    //Invalidate the client instance so that new instance is created next time.
+                    this.latokenRestClient = null;
                 }
             }
             catch (Exception ex)
@@ -403,12 +480,46 @@ namespace LatokenAPIWpfClient
         }
 
 
+        private void SelectedProfileChanged(string selectedProfileName)
+        {
+            var existingProfile = AppSettings.Default.UserProfiles.UserProfiles.FirstOrDefault(profile => profile.ProfileName == selectedProfileName);
+            if (existingProfile != null)
+            {
+                //Invalidate the client instance so that new instance is created next time.
+                this.latokenRestClient = null;
+
+                this.PublicKey = existingProfile.ApiKey;
+                this.PrivateKey = existingProfile.ApiSecret;
+            }
+            else
+            {
+                //Invalidate the client instance so that new instance is created next time.
+                this.latokenRestClient = null;
+
+                this.PublicKey = string.Empty;
+                this.PrivateKey = string.Empty;
+            }
+        }
+
         private void LoadKeys()
         {
             try
             {
-                this.PublicKey = AppSettings.Default.ApiKey;
-                this.PrivateKey = AppSettings.Default.ApiSecret;
+                if (AppSettings.Default.UserProfiles == null)
+                {
+                    AppSettings.Default.UserProfiles = new UserProfileCollection();
+                }
+                this.UserProfiles = AppSettings.Default.UserProfiles;
+
+                if (this.ProfileNames == null)
+                {
+                    this.ProfileNames = new BindingList<string>();
+                }
+
+                this.userProfiles.UserProfiles.Select(p => p.ProfileName).ToList()
+                    .ForEach(profile => this.ProfileNames.Add(profile));
+
+                this.SelectedProfileName = AppSettings.Default.SelectedProfileName;
                 this.IsFirstLaunch = AppSettings.Default.IsFirstLaunch;
             }
             catch (Exception ex)

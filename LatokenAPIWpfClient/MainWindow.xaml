@@ -89,6 +89,7 @@
                             <RowDefinition Height="45"/>
                             <RowDefinition Height="35"/>
                             <RowDefinition Height="35"/>
+                            <RowDefinition Height="35"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
@@ -97,17 +98,22 @@
                             <ColumnDefinition Width="12*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock FontSize="15" FontWeight="SemiBold" Height="23" VerticalAlignment="Center" HorizontalAlignment="Center" Width="765" Grid.ColumnSpan="2"><Run Text="Latoken .NET API Keys"/></TextBlock>
-                        <TextBlock Margin="0,3,0,0" FontSize="15" Height="23" VerticalAlignment="Top" HorizontalAlignment="Center" Width="235" Grid.Row="1"><Run Text="Enter your Latoken API Public key"/></TextBlock>
-                        <TextBox Text="{Binding PublicKey}" Margin="10,3,10,3" Height="23" VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="1" />
-                        <TextBlock FontSize="15" Height="23" VerticalAlignment="Center" HorizontalAlignment="Center" Width="235" Grid.Row="2"><Run Text="Enter your Latoken API Private key"/></TextBlock>
-                        <TextBox Text="{Binding PrivateKey}" Margin="10,3,10,3" Height="23" VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Row="2" Grid.Column="1" />
-                        <Button Command="{Binding SaveKeysCommand}" Margin="440,0,0,0" Content="Save" Height="31" VerticalAlignment="Center" HorizontalAlignment="Left" Width="80" Grid.Column="1" />
+                        <ComboBox SelectedItem="{Binding SelectedProfileName}" ItemsSource="{Binding ProfileNames}" Margin="10,0,10,0" Height="23" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" />
+                        <TextBlock Margin="0,0,0,0" FontSize="15" Height="23" VerticalAlignment="Top" HorizontalAlignment="Center" Width="235" Grid.Row="2"><Run Text="Enter your Latoken API Public key"/></TextBlock>
+                        <TextBox Text="{Binding PublicKey}" Margin="10,0,10,0" Height="23" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" />
+                        <TextBlock FontSize="15" Height="23" VerticalAlignment="Top" HorizontalAlignment="Center" Width="235" Grid.Row="3" Margin="0,0,0,0"><Run Text="Enter your Latoken API Private key"/></TextBlock>
+                        <TextBox Text="{Binding PrivateKey}" Margin="10,0,10,0" Height="23" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" />
+                        <Button Command="{Binding AddProfileCommand}" Margin="340,0,0,0" Content="Add Profile" Height="31" VerticalAlignment="Center" HorizontalAlignment="Left" Width="80" Grid.Column="1" />
+                        <Button Command="{Binding SaveKeysCommand}" Margin="440,0,0,0" Content="Save Profile" Height="31" VerticalAlignment="Center" HorizontalAlignment="Left" Width="80" Grid.Column="1" />
+                        <TextBlock FontSize="15" Height="23" VerticalAlignment="Top" HorizontalAlignment="Center" Width="235" Grid.Row="1" Margin="0,0,0,0"><Run Text="Selected Profile Name"/></TextBlock>
                     </Grid>
                 </TabItem>
             </TabControl>
             <Image HorizontalAlignment="Left" Height="46" VerticalAlignment="Top" Width="51" Source="/Latoken_Logo.png" RenderTransformOrigin="0.745,0.544" Margin="10,0,0,0">
             </Image>
             <TextBlock Margin="81,10,0,0" FontSize="25" FontWeight="SemiBold" Height="36" VerticalAlignment="Top" HorizontalAlignment="Left" Width="378">Latoken .NET API sample</TextBlock>
+            <TextBlock Margin="442,10,0,0" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" Width="348">Selected User Profile:</TextBlock>
+            <TextBlock Text="{Binding SelectedProfileName}" Margin="442,28,0,0" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" Width="348"></TextBlock>
         </Grid>
     </busyindicator:BusyMask>
 </Window>

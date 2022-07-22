@@ -26,24 +26,12 @@ namespace LatokenAPIWpfClient {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ApiKey {
+        public string SelectedProfileName {
             get {
-                return ((string)(this["ApiKey"]));
+                return ((string)(this["SelectedProfileName"]));
             }
             set {
-                this["ApiKey"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ApiSecret {
-            get {
-                return ((string)(this["ApiSecret"]));
-            }
-            set {
-                this["ApiSecret"] = value;
+                this["SelectedProfileName"] = value;
             }
         }
         
@@ -56,6 +44,17 @@ namespace LatokenAPIWpfClient {
             }
             set {
                 this["IsFirstLaunch"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::LatokenAPIWpfClient.UserProfileCollection UserProfiles {
+            get {
+                return ((global::LatokenAPIWpfClient.UserProfileCollection)(this["UserProfiles"]));
+            }
+            set {
+                this["UserProfiles"] = value;
             }
         }
     }
