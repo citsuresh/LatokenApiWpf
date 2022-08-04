@@ -11,6 +11,9 @@ In this application, You can view the available tokens in your wallet and spot a
 
 In order to use this application you need to have an account in Latoken and get the API keys for your account
 
+If you dont have an account with Latoken you can signup using the link
+https://latoken.com/earn?do=login&referral=e6u7bwxv
+
 ![image](https://user-images.githubusercontent.com/1070895/180227156-348816b8-cbec-483d-a003-75b1ca6982ce.png)
 
 If you do not have an api key, you can go to https://latoken.com/account/apikeys and create the keys.
